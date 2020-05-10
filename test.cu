@@ -31,7 +31,8 @@ int main()
     int *dev_b;
     int *dev_c;
     int deviceCount;
-    printf(cudaGetDeviceCount(&deviceCount));
+    cudaGetDeviceCount(&deviceCount);
+    cudaSetDevice(0);
 
     cudaMalloc(&dev_a, sizeof(int) * size);
     status = cudaMalloc(&dev_a, sizeof(float) * size);
