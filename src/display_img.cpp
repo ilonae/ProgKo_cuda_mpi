@@ -8,5 +8,5 @@ void readpng_version_info()
 
 int main()
 {
-    readpng_version_info;
+    readpng_version_info();
 }
