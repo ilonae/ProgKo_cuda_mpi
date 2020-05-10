@@ -15,6 +15,7 @@ __global__ void addVectors(const int *a, const int *b, int *c, const int &size)
 
 int main()
 {
+    cudaError_t status;
     const int size = 1024;
     int *a = new int[size];
     int *b = new int[size];
@@ -31,14 +32,31 @@ int main()
     int *dev_c;
 
     cudaMalloc(&dev_a, sizeof(int) * size);
+    status = cudaMalloc(&dev_a, sizeof(float) * size);
+    if (status != cudaSuccess)
+    {
+        std::cerr << "Error with memory allocation!" << std::endl;
+        return status;
+    }
     cudaMalloc(&dev_b, sizeof(int) * size);
     cudaMalloc(&dev_c, sizeof(int) * size);
 
-    cudaMemcpy(dev_a, a, sizeof(int) * size, cudaMemcpyHostToDevice);
+    status = cudaMemcpy(dev_a, a, sizeof(float) * size, cudaMemcpyHostToDevice);
+    if (status != cudaSuccess)
+    {
+        std::cerr << "Error with data copying!" << std::endl;
+        return status;
+    }
     cudaMemcpy(dev_b, b, sizeof(int) * size, cudaMemcpyHostToDevice);
     dim3 gridSize(16);
     dim3 blockSize(8, 8);
     addVectors<<<gridSize, blockSize>>>(dev_a, dev_b, dev_c, size);
+    status = cudaGetLastError();
+    if (status != cudaSuccess)
+    {
+        std::cerr << "Error with the kernel!" << std::endl;
+        return status;
+    }
 
     cudaMemcpy(c, dev_c, sizeof(int) * size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
