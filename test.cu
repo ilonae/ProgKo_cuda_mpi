@@ -34,8 +34,9 @@ int main()
 
     cudaMemcpy(dev_a, a, sizeof(int) * size, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_b, b, sizeof(int) * size, cudaMemcpyHostToDevice);
-
-    addVectors<<<4, size / 4>>>(dev_a, dev_b, dev_c, size);
+    dim3 gridSize(16);
+    dim3 blockSize(8, 8);
+    addVectors<<<gridSize, blockSize>>>(dev_a, dev_b, dev_c, size);
 
     cudaMemcpy(c, dev_c, sizeof(int) * size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
