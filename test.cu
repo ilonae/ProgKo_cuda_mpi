@@ -6,7 +6,7 @@
 
 __global__ void addVectors(const int *a, const int *b, int *c, const int &size)
 {
-    int i = threadIdx.x;
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
     c[i] = a[i] + b[i];
     printf("hello from gpu");
 };
@@ -35,10 +35,9 @@ int main()
     cudaMemcpy(dev_a, a, sizeof(int) * size, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_b, b, sizeof(int) * size, cudaMemcpyHostToDevice);
 
-    
     int blockCount = 1;
     int blockSize = size;
-    addVectors<<<blockCount, blockSize>>>(dev_a, dev_b, dev_c, size);
+    addVectors<<<4, size / 4>>>(dev_a, dev_b, dev_c, size);
 
     cudaMemcpy(c, dev_c, sizeof(int) * size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
