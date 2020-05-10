@@ -30,7 +30,6 @@ int main()
     int *dev_a;
     int *dev_b;
     int *dev_c;
-    int deviceCount;
     cudaDeviceProp deviceProp;
     int deviceId = 0;
     cudaGetDeviceProperties(&deviceProp, deviceId);
