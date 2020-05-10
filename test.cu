@@ -30,9 +30,15 @@ int main()
     int *dev_a;
     int *dev_b;
     int *dev_c;
-    cudaDeviceProp deviceProp;
-    int deviceId = 0;
-    cudaGetDeviceProperties(&deviceProp, deviceId);
+    int deviceCount;
+    cudaGetDeviceCount(&deviceCount);
+    for (int device = 0; device < deviceCount; ++device)
+        .
+        {
+            cudaDeviceProp deviceProp;
+            cudaGetDeviceProperties(&deviceProp, device);
+            std::cout << "Device '" << deviceProp.name << "' (" << device << ") has compute capability " << deviceProp.major << "." << deviceProp.minor << " and " << deviceProp.totalGlobalMem << " Bytes of available memory" << std::endl;
+        }
 
     cudaMalloc(&dev_a, sizeof(int) * size);
     status = cudaMalloc(&dev_a, sizeof(float) * size);
