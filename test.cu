@@ -6,19 +6,28 @@
 
 __global__ void addVectors(const int *a, const int *b, int *c, const int &size)
 {
-    for (int i = 0; i < size; i++)
-    {
-        c[i] = a[i] + b[i];
-    }
+    int i = threadIdx.x;
+    c[i] = a[i] + b[i];
+    printf("hello from gpu")
 }
 
 int main()
 {
     const int size = 1024;
-
     int *a = new int[size];
     int *b = new int[size];
     int *c = new int[size];
+
+    int *dev_a;
+    int *dev_b;
+    int *dev_c;
+
+    cudaMalloc(&dev_a, sizeof(int) * size);
+    cudaMalloc(&dev_b, sizeof(int) * size);
+    cudaMalloc(&dev_c, sizeof(int) * size);
+
+    cudaMemcpy(dev_a, a, sizeof(int) * size, cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_b, b, sizeof(int) * size, cudaMemcpyHostToDevice);
 
     for (int i = 0; i < size; i++)
     {
@@ -26,7 +35,17 @@ int main()
         b[i] = 2;
     }
 
-    addVectors<<<1, 1>>>(a, b, c, size);
+    int blockCount = 1;
+    int blockSize = size;
+    addVectors<<<blockCount, blockSize>>>(dev_a, dev_b, dev_c, size);
+
+    cudaMemcpy(c, dev_c, sizeof(int) * size, cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+
+    cudaFree(&dev_a);
+    cudaFree(&dev_b);
+    cudaFree(&dev_c);
+    cudaDeviceReset();
 
     float avg = 0;
     for (int i = 0; i < size; i++)
