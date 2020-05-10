@@ -9,7 +9,7 @@ __global__ void addVectors(const int *a, const int *b, int *c, const int &size)
     int i = threadIdx.x;
     c[i] = a[i] + b[i];
     printf("hello from gpu")
-}
+};
 
 int main()
 {
