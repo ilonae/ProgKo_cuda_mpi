@@ -1,4 +1,4 @@
-#include <png++/png.hpp>
+#include <include/png++/png.hpp>
 //...
 int png;
 png::image<png::rgb_pixel> image(128, 128);
