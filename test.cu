@@ -18,6 +18,12 @@ int main()
     int *b = new int[size];
     int *c = new int[size];
 
+    for (int i = 0; i < size; i++)
+    {
+        a[i] = 1;
+        b[i] = 2;
+    }
+
     int *dev_a;
     int *dev_b;
     int *dev_c;
@@ -29,12 +35,7 @@ int main()
     cudaMemcpy(dev_a, a, sizeof(int) * size, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_b, b, sizeof(int) * size, cudaMemcpyHostToDevice);
 
-    for (int i = 0; i < size; i++)
-    {
-        a[i] = 1;
-        b[i] = 2;
-    }
-
+    
     int blockCount = 1;
     int blockSize = size;
     addVectors<<<blockCount, blockSize>>>(dev_a, dev_b, dev_c, size);
