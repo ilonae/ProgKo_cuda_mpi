@@ -6,9 +6,9 @@
 
 __global__ void addVectors(const int *a, const int *b, int *c, const int &size)
 {
-    iint i = blockIdx.x * blockDim.x * blockDim.y +
-             blockDim.x * threadIdx.y +
-             threadIdx.x;
+    int i = blockIdx.x * blockDim.x * blockDim.y +
+            blockDim.x * threadIdx.y +
+            threadIdx.x;
     c[i] = a[i] + b[i];
     printf("hello from gpu");
 };
