@@ -33,7 +33,6 @@ int main()
     int deviceCount;
     cudaGetDeviceCount(&deviceCount);
     for (int device = 0; device < deviceCount; ++device)
-        .
         {
             cudaDeviceProp deviceProp;
             cudaGetDeviceProperties(&deviceProp, device);
