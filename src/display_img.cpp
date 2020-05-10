@@ -1,4 +1,4 @@
-#include <png++/png.hpp>
+#include <../include/png++/png.hpp>
 //...
 png::image<png::rgb_pixel> image(128, 128);
 for (size_t y = 0; y < image.get_height(); ++y)
