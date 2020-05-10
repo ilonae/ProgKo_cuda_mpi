@@ -31,8 +31,9 @@ int main()
     int *dev_b;
     int *dev_c;
     int deviceCount;
-    cudaGetDeviceCount(&deviceCount);
-    cudaSetDevice(0);
+    cudaDeviceProp deviceProp;
+    int deviceId = 0;
+    cudaGetDeviceProperties(&deviceProp, deviceId);
 
     cudaMalloc(&dev_a, sizeof(int) * size);
     status = cudaMalloc(&dev_a, sizeof(float) * size);
