@@ -46,8 +46,6 @@ void read_png_file(char *file_name)
     if (!fp)
         abort_("[read_png_file] File %s could not be opened for reading", file_name);
     fread(header, 1, 8, fp);
-    if (png_sig_cmp(header, 0, 8))
-        abort_("[read_png_file] File %s is not recognized as a PNG file", file_name);
 
     /* initialize stuff */
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
