@@ -3,9 +3,13 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-int *dev_a;
-int *dev_b;
-int *dev_c;
-cudaMalloc(&dev_a, sizeof(int) * size);
-cudaMalloc(&dev_b, sizeof(int) * size);
-cudaMalloc(&dev_c, sizeof(int) * size);
+__global__ void cuda_hello()
+{
+    printf("Hello World from GPU!\n");
+}
+
+int main()
+{
+    cuda_hello<<<1, 1>>>();
+    return 0;
+}
