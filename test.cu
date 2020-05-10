@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
+#include <mpi.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -33,11 +34,11 @@ int main()
     int deviceCount;
     cudaGetDeviceCount(&deviceCount);
     for (int device = 0; device < deviceCount; ++device)
-        {
-            cudaDeviceProp deviceProp;
-            cudaGetDeviceProperties(&deviceProp, device);
-            std::cout << "Device '" << deviceProp.name << "' (" << device << ") has compute capability " << deviceProp.major << "." << deviceProp.minor << " and " << deviceProp.totalGlobalMem << " Bytes of available memory" << std::endl;
-        }
+    {
+        cudaDeviceProp deviceProp;
+        cudaGetDeviceProperties(&deviceProp, device);
+        std::cout << "Device '" << deviceProp.name << "' (" << device << ") has compute capability " << deviceProp.major << "." << deviceProp.minor << " and " << deviceProp.totalGlobalMem << " Bytes of available memory" << std::endl;
+    }
 
     cudaMalloc(&dev_a, sizeof(int) * size);
     status = cudaMalloc(&dev_a, sizeof(float) * size);
