@@ -8,8 +8,8 @@
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int* width, int* height, int* colorWidthStep, int* grayWidthStep) {
     {
-        const int x = blockIdx.x * blockDim.x + threadIdx.x;
-        const int y = blockIdx.y * blockDim.y + threadIdx.y;
+        const int* x = blockIdx.x * blockDim.x + threadIdx.x;
+        const int* y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
         {
             //Loc base Image
