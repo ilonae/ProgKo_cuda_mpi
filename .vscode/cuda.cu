@@ -90,11 +90,16 @@ int main(int argc, char **argv)
     unsigned char* inp=(unsigned char*)argv[1];
     unsigned char* out=(unsigned char*)argv[2];
 
-    int pw=(int)argv[3];
-    int ph=(int)argv[4];
+    int* pw=(int*)argv[3];
+    int* ph=(int*)argv[4];
 
-    int colorwidthstep=(int)argv[3];
-    int grayWidthStep=(int)argv[4];
+    int* colorwidthstep=(int*)argv[3];
+    int* grayWidthStep=(int*)argv[4];
+
+    int pw=(int)pw;
+    int ph= (int)ph;
+    int colorWidthStep = (int)colorWidthStep;
+    int grayWidthStep= (int) grayWidthStep;
     
    
     dim3 gridSize(16);
