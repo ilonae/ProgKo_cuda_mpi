@@ -13,10 +13,10 @@ __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, in
         if ((x < width) && (y < height))
         {
             //Loc base Image
-            const int color_tid = y * colorWidthStep + (4 * x);
+            const int* color_tid = y * colorWidthStep + (4 * x);
 
             //Loc in Grayscale
-            const int gray_tid = y * colorWidthStep + (4 * x);
+            const int* gray_tid = y * colorWidthStep + (4 * x);
 
             const unsigned char blue = input[color_tid];
             const unsigned char green = input[color_tid + 1];
