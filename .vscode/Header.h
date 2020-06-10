@@ -5,7 +5,6 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
-#include "mpi.h"
 #include <cuda.h>
 #ifdef __CUDACC__
 #define CUDA_CALLABLE_MEMBER __host__ __device__
