@@ -96,7 +96,11 @@ int main(int argc, char **argv)
     int colorwidthstep=(int)argv[3];
     int grayWidthStep=(int)argv[4];
     
-    grayscale_kernel(inp, out,pw,ph,colorwidthstep, grayWidthStep);
+   
+    dim3 gridSize(16);
+    dim3 blockSize(8, 8);
+    
+    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep);
 }
     
     
