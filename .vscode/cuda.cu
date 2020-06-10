@@ -93,8 +93,8 @@ int main(int argc, char **argv)
     int* pw=(int*)argv[3];
     int* ph=(int*)argv[4];
 
-    int* colorwidthstep=(int*)argv[3];
-    int* grayWidthStep=(int*)argv[4];
+    int* colorwidthstep=(int*)argv[5];
+    int* grayWidthStep=(int*)argv[6];
 
     int pw2=(int)pw;
     int ph2= (int)ph;
