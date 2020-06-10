@@ -6,7 +6,7 @@
 
 
 
-__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
+__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int* width, int* height, int* colorWidthStep, int* grayWidthStep) {
     {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -93,19 +93,14 @@ int main(int argc, char **argv)
     int* pw=(int*)argv[3];
     int* ph=(int*)argv[4];
 
-    int* colorWidthStep=(int*)argv[5];
+    int* colorwidthstep=(int*)argv[5];
     int* grayWidthStep=(int*)argv[6];
 
-    int pw2=(int)pw;
-    int ph2= (int)ph;
-    int colorWidthStep2 = (int)colorWidthStep;
-    int grayWidthStep2= (int) grayWidthStep;
-    
    
     dim3 gridSize(16);
     dim3 blockSize(8, 8);
     
-    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw2,ph2,colorWidthStep2, grayWidthStep2);
+    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep);
 }
     
     
