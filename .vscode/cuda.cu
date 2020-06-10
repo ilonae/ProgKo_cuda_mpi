@@ -96,16 +96,16 @@ int main(int argc, char **argv)
     int* colorwidthstep=(int*)argv[3];
     int* grayWidthStep=(int*)argv[4];
 
-    int pw=(int)pw;
-    int ph= (int)ph;
-    int colorWidthStep = (int)colorWidthStep;
-    int grayWidthStep= (int) grayWidthStep;
+    int pw2=(int)pw;
+    int ph2= (int)ph;
+    int colorWidthStep2 = (int)colorWidthStep;
+    int grayWidthStep2= (int) grayWidthStep;
     
    
     dim3 gridSize(16);
     dim3 blockSize(8, 8);
     
-    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep);
+    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw2,ph2,colorwidthstep2, grayWidthStep2);
 }
     
     
