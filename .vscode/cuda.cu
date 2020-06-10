@@ -79,7 +79,23 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
     
     
     
+int main(int argc, char **argv)
+{
+
+    for (int i = 0; i < argc; ++i) 
+    cout << argv[i] << "\n";
     
+    unsigned char* inp=(unsigned char*)argv[1];
+    unsigned char* out=(unsigned char*)argv[2];
+
+    int* pw=(int*)argv[3];
+    int* ph=(int*)argv[4];
+
+    int* colorwidthstep=(int*)argv[3];
+    int* grayWidthStep=(int*)argv[4];
+    
+    grayscale_kernel(inp, out,pw,ph,colorwidthstep, grayWidthStep);
+}
     
     
     
