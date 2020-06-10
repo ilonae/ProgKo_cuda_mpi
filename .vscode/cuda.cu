@@ -34,7 +34,6 @@ __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, in
 
 __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
 
-    bool once=true;
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
     const int xminus = blockIdx.x * blockDim.x + (threadIdx.x-1);
@@ -130,7 +129,7 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
 
 
 
-void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
+/* void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     // Calculate total number of bytes of input and output image
     const int colorBytes = input.step * input.rows;
     const int grayBytes = output.step * output.rows;
@@ -166,4 +165,4 @@ void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     // Free the device memory
     SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
     SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
-}
+} */
