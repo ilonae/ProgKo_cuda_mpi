@@ -6,17 +6,17 @@
 
 
 
-__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int* width, int* height, int* colorWidthStep, int* grayWidthStep) {
+__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
     {
-        const int* x = blockIdx.x * blockDim.x + threadIdx.x;
-        const int* y = blockIdx.y * blockDim.y + threadIdx.y;
+        const int x = blockIdx.x * blockDim.x + threadIdx.x;
+        const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
         {
             //Loc base Image
-            const int* color_tid = y * colorWidthStep + (4 * x);
+            const int color_tid = y * colorWidthStep + (4 * x);
 
             //Loc in Grayscale
-            const int* gray_tid = y * colorWidthStep + (4 * x);
+            const int gray_tid = y * colorWidthStep + (4 * x);
 
             const unsigned char blue = input[color_tid];
             const unsigned char green = input[color_tid + 1];
@@ -90,11 +90,11 @@ int main(int argc, char **argv)
     unsigned char* inp=(unsigned char*)argv[1];
     unsigned char* out=(unsigned char*)argv[2];
 
-    int* pw=(int*)argv[3];
-    int* ph=(int*)argv[4];
+    int pw=200;
+    int ph=200;
 
-    int* colorwidthstep=(int*)argv[5];
-    int* grayWidthStep=(int*)argv[6];
+    int colorwidthstep=10;
+    int grayWidthStep=10;
 
    
     dim3 gridSize(16);
