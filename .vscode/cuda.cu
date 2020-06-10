@@ -1,4 +1,6 @@
 #include "Header.h"
+#include <iostream>
+#include <fstream>
 
 //https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
 
@@ -83,16 +85,16 @@ int main(int argc, char **argv)
 {
 
     for (int i = 0; i < argc; ++i) 
-    cout << argv[i] << "\n";
+    std::cout << argv[i] << "\n";
     
     unsigned char* inp=(unsigned char*)argv[1];
     unsigned char* out=(unsigned char*)argv[2];
 
-    int* pw=(int*)argv[3];
-    int* ph=(int*)argv[4];
+    int pw=(int)argv[3];
+    int ph=(int)argv[4];
 
-    int* colorwidthstep=(int*)argv[3];
-    int* grayWidthStep=(int*)argv[4];
+    int colorwidthstep=(int)argv[3];
+    int grayWidthStep=(int)argv[4];
     
     grayscale_kernel(inp, out,pw,ph,colorwidthstep, grayWidthStep);
 }
