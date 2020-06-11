@@ -195,7 +195,7 @@ void process_file(void)
         SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
         SAFE_CALL(cudaMalloc<unsigned char>(&d_output, grayBytes), "CUDA Malloc Failed");    
         // Copy data from OpenCV input image to device memory
-        SAFE_CALL(cudaMemcpy(d_input, input.ptr(), colorBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
+        SAFE_CALL(cudaMemcpy(d_input, png_ptr, colorBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
     
         // Threads per Block
         const dim3 block(32, 32);
