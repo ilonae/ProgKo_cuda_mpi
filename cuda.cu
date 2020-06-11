@@ -167,13 +167,13 @@ void read_png_file(char* file_name)
 
 void process_file(void)
 {
-        if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB)
-                abort_("[process_file] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
+        if (png_get_color_type(png_ptr, info_ptr) != PNG_COLOR_TYPE_RGB)
+                abort_("[process_file] input file is PNG_COLOR_TYPE_RGBA but must be PNG_COLOR_TYPE_RGB "
                        "(lacks the alpha channel)");
 
-        if (png_get_color_type(png_ptr, info_ptr) != PNG_COLOR_TYPE_RGBA)
-                abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
-                       PNG_COLOR_TYPE_RGBA, png_get_color_type(png_ptr, info_ptr));
+        if (png_get_color_type(png_ptr, info_ptr) != PNG_COLOR_TYPE_RGB)
+                abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGB (%d) (is %d)",
+                       PNG_COLOR_TYPE_RGB, png_get_color_type(png_ptr, info_ptr));
 
         for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
