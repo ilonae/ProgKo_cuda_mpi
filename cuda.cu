@@ -175,7 +175,7 @@ void process_file(void)
                 abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGB (%d) (is %d)",
                        PNG_COLOR_TYPE_RGB, png_get_color_type(png_ptr, info_ptr));
 
-        int* colorBytes;
+        int colorBytes;
 
         for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
@@ -189,7 +189,7 @@ void process_file(void)
         }
 
         unsigned char* d_input, * d_output;
-        int* grayBytes = colorBytes;
+        int grayBytes = colorBytes;
     
         // Allocate device memory
         SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
