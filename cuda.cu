@@ -213,13 +213,12 @@ void process_file(void)
          // Launch the color conversion kernel
         if(flag ==true){
             grayscale_kernel<<<grid, block>>>(d_output, width, height, row_pointers);
-            addVectors<<<grid, block>>>(dev_a, dev_b, dev_c, size);
+            //addVectors<<<grid, block>>>(dev_a, dev_b, dev_c, size);
             }
         status = cudaGetLastError();
         if (status != cudaSuccess)
         {
             std::cerr << "Error with the kernel!" << std::endl;
-            return status;
         }
 
         
