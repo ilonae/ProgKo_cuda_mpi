@@ -132,7 +132,6 @@ void read_png_file(char* file_name)
 
         info_ptr = png_create_info_struct(png_ptr);
         if (!info_ptr)
-                png_destroy_read_struct(&png_ptr, NULL, NULL);
                 abort_("[read_png_file] png_create_info_struct failed");
 
         if (setjmp(png_jmpbuf(png_ptr)))
@@ -154,7 +153,6 @@ void read_png_file(char* file_name)
 
         /* read file */
         if (setjmp(png_jmpbuf(png_ptr)))
-            png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
                 abort_("[read_png_file] Error during read_image");
 
         row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
