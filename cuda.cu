@@ -175,18 +175,36 @@ void process_file(void)
                 abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGB (%d) (is %d)",
                        PNG_COLOR_TYPE_RGB, png_get_color_type(png_ptr, info_ptr));
 
+        int* colorBytes;
+
         for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
                 for (x=0; x<width; x++) {
                         png_byte* ptr = &(row[x*3]);
                         printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
                                x, y, ptr[0], ptr[1], ptr[2]);
+                               colorBytes+=3;
 
-                        /* set red value to 0 and green value to the blue one */
-                        ptr[0] = 0;
-                        ptr[1] = ptr[2];
                 }
         }
+
+        unsigned int* d_kernel;
+
+        unsigned char* d_input, * d_output;
+        const int grayBytes = colorBytes;
+    
+        // Allocate device memory
+        SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
+        SAFE_CALL(cudaMalloc<unsigned char>(&d_output, grayBytes), "CUDA Malloc Failed");    
+        // Copy data from OpenCV input image to device memory
+        SAFE_CALL(cudaMemcpy(d_input, input.ptr(), colorBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
+    
+        // Threads per Block
+        const dim3 block(32, 32);
+    
+        // Calculate grid size to cover the whole image
+        const dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
+    
 }
  
     
@@ -239,12 +257,10 @@ int main(int argc, char **argv)
 
 //}
     
-
-
-/* 
-void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
+/* void convert(int inp_cols, int inp_rows, cv::Mat& output,bool flag) {
     // Calculate total number of bytes of input and output image
-    const int colorBytes = input.step * input.rows;
+
+    const int colorBytes = input.step * inp_rows;
     const int grayBytes = output.step * output.rows;
     
     unsigned int* d_kernel;
@@ -261,13 +277,13 @@ void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     const dim3 block(32, 32);
 
     // Calculate grid size to cover the whole image
-    const dim3 grid((input.cols + block.x - 1) / block.x, (input.rows + block.y - 1) / block.y);
+    const dim3 grid((inp_cols + block.x - 1) / block.x, (inp_rows + block.y - 1) / block.y);
 
     // Launch the color conversion kernel
     if(flag ==true){
-    grayscale_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
+    grayscale_kernel << <grid, block >> > (d_input, d_output, inp_cols, inp_rows, input.step, output.step);
     }else {    
-    emboss_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
+    emboss_kernel << <grid, block >> > (d_input, d_output, inp_cols, inp_rows, input.step, output.step);
     }
     // Synchronize to check for any kernel launch errors
     SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
@@ -278,4 +294,4 @@ void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     // Free the device memory
     SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
     SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
-} */
+}  */
