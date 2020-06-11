@@ -132,6 +132,7 @@ void read_png_file(char* file_name)
 
         info_ptr = png_create_info_struct(png_ptr);
         if (!info_ptr)
+                png_destroy_read_struct(&png_ptr, NULL, NULL);
                 abort_("[read_png_file] png_create_info_struct failed");
 
         if (setjmp(png_jmpbuf(png_ptr)))
@@ -153,6 +154,7 @@ void read_png_file(char* file_name)
 
         /* read file */
         if (setjmp(png_jmpbuf(png_ptr)))
+            png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
                 abort_("[read_png_file] Error during read_image");
 
         row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
@@ -163,52 +165,39 @@ void read_png_file(char* file_name)
         std::cout << "FIle processed.";
 
         fclose(fp);
+}
 
-/*   unsigned char sig[8];
+void process_file(void)
+{
+        if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB)
+                abort_("[process_file] input file is PNG_COLOR_TYPE_RGB but must be PNG_COLOR_TYPE_RGBA "
+                       "(lacks the alpha channel)");
 
-    fread(sig, 1, 8, infile);
-    if (!png_check_sig(sig, 8))
-        return 1;   /* bad signature 
+        if (png_get_color_type(png_ptr, info_ptr) != PNG_COLOR_TYPE_RGBA)
+                abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (%d) (is %d)",
+                       PNG_COLOR_TYPE_RGBA, png_get_color_type(png_ptr, info_ptr));
 
-png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
-      NULL);
-    if (!png_ptr)
-        return 4;   /* out of memory 
-  
-    info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr) {
-        png_destroy_read_struct(&png_ptr, NULL, NULL);
-        return 4;   /* out of memory 
-    }
+        for (y=0; y<height; y++) {
+                png_byte* row = row_pointers[y];
+                for (x=0; x<width; x++) {
+                        png_byte* ptr = &(row[x*4]);
+                        printf("Pixel at position [ %d - %d ] has RGBA values: %d - %d - %d - %d\n",
+                               x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
 
-if (setjmp(png_ptr->jmpbuf)) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        return 2;
-    }
-    return 0; */
+                        /* set red value to 0 and green value to the blue one */
+                        ptr[0] = 0;
+                        ptr[1] = ptr[2];
+                }
+        }
 }
  
     
 int main(int argc, char **argv)
 {
-
-    /* for (int i = 0; i < argc; ++i) 
-    std::cout << argv[i] << "\n"; */
-
+    readpng_version_info();
     read_png_file(argv[1]);
+    process_file();
     return 0;
-
-    /* int pw=200;
-    int ph=200;
-
-    int colorwidthstep=10;
-    int grayWidthStep=10;
-
-   
-    dim3 gridSize(16);
-    dim3 blockSize(8, 8);
-    
-    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep); */
 }
        
     
