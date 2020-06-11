@@ -36,17 +36,10 @@ void abort_(const char * s, ...)
 __global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep* row_pointers) {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
-        if ((x < width) && (y < height))
-        {
-                png_byte* row = row_pointers[y];
-                        png_byte* ptr = &(row[x*3]);
-                        printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
-                               x, y, ptr[0], ptr[1], ptr[2]);
-                               //ptr[0],ptr[1],ptr[2] = (ptr[0] + ptr[1] + ptr[2])/3;   
-        }
-        output[x] = 1;
-        output[y] = 1;
-        printf("hello from gpu");   
+        if ((x < width) && (y < height)){
+            output[x] = 1;
+            output[y] = 1;
+            printf("hello from gpu");  }  
 }
 
 
