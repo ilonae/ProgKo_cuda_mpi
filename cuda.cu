@@ -86,7 +86,7 @@ void readpng_version_info()
       ZLIB_VERSION, zlib_version);
 }
 
-int readpng_init(FILE *infile){
+void readpng_init(FILE *infile){
   unsigned char sig[8];
 
     fread(sig, 1, 8, infile);
