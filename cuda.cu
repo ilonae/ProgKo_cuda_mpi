@@ -160,6 +160,7 @@ void read_png_file(char* file_name)
                 row_pointers[y] = (png_byte*) malloc(png_get_rowbytes(png_ptr,info_ptr));
 
         png_read_image(png_ptr, row_pointers);
+        fprintf( " Image has been read.\n");
 
         fclose(fp);
 
