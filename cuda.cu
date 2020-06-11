@@ -1,15 +1,13 @@
 #include "Header.h"
-#include <iostream>
-#include <fstream>
 
 //https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
 
 
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
+    {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
-        printf("hello from gpu");
         if ((x < width) && (y < height))
         {
             //Loc base Image
@@ -29,6 +27,8 @@ __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, in
             output[gray_tid+2] = static_cast<unsigned char>(gray);
             output[gray_tid+3] = static_cast<unsigned char>(alpha);
         }
+    }
+
 }
 
 
@@ -81,10 +81,14 @@ int main(int argc, char **argv)
     for (int i = 0; i < argc; ++i) 
     std::cout << argv[i] << "\n";
     
-    unsigned char* inp=(unsigned char*)argv[1];
-    unsigned char* out=(unsigned char*)argv[2];
+    FILE* in=(FILE*)argv[1];
+    FILE* out=(FILE*)argv[2];
+    bool once=true;
 
-    int pw=200;
+    readpng_init(in);
+    return 0;
+
+    /* int pw=200;
     int ph=200;
 
     int colorwidthstep=10;
@@ -94,11 +98,32 @@ int main(int argc, char **argv)
     dim3 gridSize(16);
     dim3 blockSize(8, 8);
     
-    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep);
+    grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep); */
 }
     
+int readpng_init(FILE *infile){
+    unsigned char sig[8];
+  
+      fread(sig, 1, 8, infile);
+      if (!png_check_sig(sig, 8))
+          return 1;   /* bad signature */
+  
+  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
+        NULL);
+      if (!png_ptr)
+          return 4;   /* out of memory */
     
-    
+      info_ptr = png_create_info_struct(png_ptr);
+      if (!info_ptr) {
+          png_destroy_read_struct(&png_ptr, NULL, NULL);
+          return 4;   /* out of memory */
+      }
+  
+  if (setjmp(png_ptr->jmpbuf)) {
+          png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+          return 2;
+      }
+  } 
     
     
     
@@ -144,8 +169,8 @@ int main(int argc, char **argv)
     
 
 
-
-/* void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
+/* 
+void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     // Calculate total number of bytes of input and output image
     const int colorBytes = input.step * input.rows;
     const int grayBytes = output.step * output.rows;

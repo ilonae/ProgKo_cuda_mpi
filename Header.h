@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "cuda_runtime.h"
 #include <iostream>
+#include "png.h"
 #include <chrono>
 #include <fstream>
 #include <cuda.h>
