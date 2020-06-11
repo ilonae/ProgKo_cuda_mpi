@@ -35,12 +35,24 @@ png_bytep * row_pointers;
 
 
 
-__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep) {
+__global__ void grayscale_kernel(unsigned char* output) {
     {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
         {
+
+            for (y=0; y<height; y++) {
+                png_byte* row = row_pointers[y];
+                for (x=0; x<width; x++) {
+                        png_byte* ptr = &(row[x*3]);
+                        printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
+                               x, y, ptr[0], ptr[1], ptr[2]);
+
+                               ptr[0],ptr[1],ptr[2] = (ptr[0] + ptr[1] + ptr[2])/3;
+
+                }
+        }
             //Loc base Image
             const int color_tid = y * colorWidthStep + (4 * x);
 
@@ -178,15 +190,6 @@ void process_file(void)
 
         int colorBytes =  width * height * 3;
 
-        for (y=0; y<height; y++) {
-                png_byte* row = row_pointers[y];
-                for (x=0; x<width; x++) {
-                        png_byte* ptr = &(row[x*3]);
-                        printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
-                               x, y, ptr[0], ptr[1], ptr[2]);
-
-                }
-        }
 
         unsigned char* d_input, * d_output;
         int grayBytes = colorBytes;
@@ -208,18 +211,18 @@ void process_file(void)
 
          // Launch the color conversion kernel
         if(flag ==true){
-            grayscale_kernel << <grid, block >> > (d_input, d_output, width, height, row_pointers);
+            grayscale_kernel << <grid, block >> > (d_output);
             }
 
             // Synchronize to check for any kernel launch errors
-        SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
+        /* SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
 
         // Copy back data from destination device meory to OpenCV output image
         SAFE_CALL(cudaMemcpy(output_ptr, d_output, grayBytes, cudaMemcpyDeviceToHost), "CUDA Memcpy Host To Device Failed");
 
         // Free the device memory
         SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
-        SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
+        SAFE_CALL(cudaFree(d_output), "CUDA Free Failed"); */
     
 }
  
@@ -231,44 +234,6 @@ int main(int argc, char **argv)
     process_file();
     return 0;
 }
-       
-    
-    ////row
-     //const int x = blockIdx.x * blockDim.x + threadIdx.x;
-     ////column
-     //const int y = blockIdx.y * blockDim.y + threadIdx.y;
-     //const int color_tid = y * colorWidthStep + (4 * x);
-     //
-   //if ((x < width) && (y < height))
-    //{
-     //   int c = 0;
-     //   for (int i = -1; i < 2; i++) {
-     //       for (int j = -1; j < 2; j++) {
-     //                         
-     //           kernel[c] = (x + i) * colorWidthStep + ( (x + i));
-     //           //printf("KErnelvalue %d", kernel[c]);
-     //           c++;                
-     //       }
-     //   }
-     //   int filterarray[9] = { -1,0,0,0,0,0,0,0,1 };
-     //   int j=0;
-     //   float calc = 0;
-     //   for (int i=0; i < 36;i++) {
-     //       if (i % 4 == 0) {
-     //           j++;
-     //      }
-     //      calc=calc+ filterarray[j] * input[kernel[i]];
-     //      
-     //      printf("calc %d \n", kernel[c]);
-     //   }
-     //   output[color_tid] = static_cast<unsigned char>(calc);
-     //   output[color_tid + 1] = static_cast<unsigned char>(calc);
-     //   output[color_tid + 2] = static_cast<unsigned char>(calc);
-     //   const unsigned char alpha = input[color_tid + 3];
-     //   output[color_tid + 3] = static_cast<unsigned char>(alpha);
-     //
-    //
-    //}
 
 
 //}
