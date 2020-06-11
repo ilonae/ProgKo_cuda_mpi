@@ -27,6 +27,7 @@ png_byte color_type;
 png_byte bit_depth;
 
 png_structp png_ptr;
+png_structp output_ptr;
 png_infop info_ptr;
 int number_of_passes;
 png_bytep * row_pointers;
@@ -34,7 +35,7 @@ png_bytep * row_pointers;
 
 
 
-__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
+__global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep) {
     {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -189,6 +190,9 @@ void process_file(void)
 
         unsigned char* d_input, * d_output;
         int grayBytes = colorBytes;
+        bool flag= true;
+
+        output_ptr = png_ptr;
     
         // Allocate device memory
         SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
@@ -201,6 +205,21 @@ void process_file(void)
     
         // Calculate grid size to cover the whole image
         const dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
+
+         // Launch the color conversion kernel
+        if(flag ==true){
+            grayscale_kernel << <grid, block >> > (d_input, d_output, width, height, row_pointers);
+            }
+
+            // Synchronize to check for any kernel launch errors
+        SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
+
+        // Copy back data from destination device meory to OpenCV output image
+        SAFE_CALL(cudaMemcpy(output_ptr, d_output, grayBytes, cudaMemcpyDeviceToHost), "CUDA Memcpy Host To Device Failed");
+
+        // Free the device memory
+        SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
+        SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
     
 }
  
@@ -254,10 +273,9 @@ int main(int argc, char **argv)
 
 //}
     
-/* void convert(int inp_cols, int inp_rows, cv::Mat& output,bool flag) {
+/* void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
     // Calculate total number of bytes of input and output image
-
-    const int colorBytes = input.step * inp_rows;
+    const int colorBytes = input.step * input.rows;
     const int grayBytes = output.step * output.rows;
     
     unsigned int* d_kernel;
@@ -274,13 +292,13 @@ int main(int argc, char **argv)
     const dim3 block(32, 32);
 
     // Calculate grid size to cover the whole image
-    const dim3 grid((inp_cols + block.x - 1) / block.x, (inp_rows + block.y - 1) / block.y);
+    const dim3 grid((input.cols + block.x - 1) / block.x, (input.rows + block.y - 1) / block.y);
 
     // Launch the color conversion kernel
     if(flag ==true){
-    grayscale_kernel << <grid, block >> > (d_input, d_output, inp_cols, inp_rows, input.step, output.step);
+    grayscale_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
     }else {    
-    emboss_kernel << <grid, block >> > (d_input, d_output, inp_cols, inp_rows, input.step, output.step);
+    emboss_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
     }
     // Synchronize to check for any kernel launch errors
     SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
