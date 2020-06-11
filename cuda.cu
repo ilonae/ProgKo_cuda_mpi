@@ -39,13 +39,12 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
 
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
-        if ((x < width) && (y < height))
-        {
+       
         
         output[x] = 1;
         output[y] = 1;
         printf("hello from gpu");
-        }
+    
 
 }
 /* 
