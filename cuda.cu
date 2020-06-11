@@ -37,7 +37,7 @@ png_bytep * row_pointers;
 
 __global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep * row_pointers) {
     {
-        std::cout << "RUnning";
+        printf("hello from gpu");
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
