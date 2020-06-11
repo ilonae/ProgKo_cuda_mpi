@@ -35,7 +35,7 @@ png_bytep * row_pointers;
 
 
 
-__global__ void grayscale_kernel(unsigned char* output) {
+__global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep * row_pointers) {
     {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -54,7 +54,7 @@ __global__ void grayscale_kernel(unsigned char* output) {
                 }
         }
             //Loc base Image
-            const int color_tid = y * colorWidthStep + (4 * x);
+            /* const int color_tid = y * colorWidthStep + (4 * x);
 
             //Loc in Grayscale
             const int gray_tid = y * colorWidthStep + (4 * x);
@@ -68,7 +68,7 @@ __global__ void grayscale_kernel(unsigned char* output) {
             output[gray_tid] = static_cast<unsigned char>(gray);
             output[gray_tid+1] = static_cast<unsigned char>(gray);
             output[gray_tid+2] = static_cast<unsigned char>(gray);
-            output[gray_tid+3] = static_cast<unsigned char>(alpha);
+            output[gray_tid+3] = static_cast<unsigned char>(alpha); */
         }
     }
 
@@ -211,7 +211,7 @@ void process_file(void)
 
          // Launch the color conversion kernel
         if(flag ==true){
-            grayscale_kernel << <grid, block >> > (d_output);
+            grayscale_kernel << <grid, block >> > (d_output, width, height, row_pointers);
             }
 
             // Synchronize to check for any kernel launch errors
