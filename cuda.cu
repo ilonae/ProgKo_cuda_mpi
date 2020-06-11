@@ -48,31 +48,15 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
 
                                //ptr[0],ptr[1],ptr[2] = (ptr[0] + ptr[1] + ptr[2])/3;
 
-                }
-        }
-            //Loc base Image
-            /* const int color_tid = y * colorWidthStep + (4 * x);
-
-            //Loc in Grayscale
-            const int gray_tid = y * colorWidthStep + (4 * x);
-
-            const unsigned char blue = input[color_tid];
-            const unsigned char green = input[color_tid + 1];
-            const unsigned char red = input[color_tid + 2];
-            const unsigned char alpha = input[color_tid + 3];
-            const float gray = red * 0.21f + green * 0.72 + blue * 0.07f;
-
-            output[gray_tid] = static_cast<unsigned char>(gray);
-            output[gray_tid+1] = static_cast<unsigned char>(gray);
-            output[gray_tid+2] = static_cast<unsigned char>(gray);
-            output[gray_tid+3] = static_cast<unsigned char>(alpha); */
+                
+        
         }
     }
 
 }
 
 
-__global__ void emboss_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
+/* __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
 
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -113,7 +97,7 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
         const unsigned char alpha = input[color_tid + 3];
         output[color_tid + 3] = static_cast<unsigned char>(alpha);
     }
-}
+} */
 
 void readpng_version_info()
 {
