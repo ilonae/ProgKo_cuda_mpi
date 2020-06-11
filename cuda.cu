@@ -113,7 +113,7 @@ void readpng_version_info()
       ZLIB_VERSION, zlib_version);
 }
 
-void readpng_init(char* file_name)
+void read_png_file(char* file_name)
 {
         char header[8];
 
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < argc; ++i) 
     std::cout << argv[i] << "\n";
 
-    readpng_init(argv[1]);
+    read_png_file(argv[1]);
     return 0;
 
     /* int pw=200;
