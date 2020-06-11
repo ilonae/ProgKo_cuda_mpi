@@ -1,10 +1,37 @@
 #include "Header.h"
 
 //https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
-using namespace std;
-FILE *in;
-static png_structp png_ptr;
-static png_infop info_ptr;
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+
+#define PNG_DEBUG 3
+#include <png.h>
+
+void abort_(const char * s, ...)
+{
+        va_list args;
+        va_start(args, s);
+        vfprintf(stderr, s, args);
+        fprintf(stderr, "\n");
+        va_end(args);
+        abort();
+}
+
+int x, y;
+
+int width, height;
+png_byte color_type;
+png_byte bit_depth;
+
+png_structp png_ptr;
+png_infop info_ptr;
+int number_of_passes;
+png_bytep * row_pointers;
+
+
 
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
