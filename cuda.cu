@@ -40,8 +40,6 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
             png_byte* row = row_pointers[y];
             png_byte* ptr = &(row[x*3]);
             printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n", x, y, ptr[0], ptr[1], ptr[2]);
-            output[x] = 1;
-            output[y] = 1;
             printf("hello from gpu");  
         }  
 }
