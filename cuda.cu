@@ -189,11 +189,11 @@ void process_file(void)
     
         // Calculate grid size to cover the whole image
         const dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
-        std::cout << "RUnning";
 
          // Launch the color conversion kernel
         if(flag ==true){
             grayscale_kernel << <grid, block >> > (d_output, width, height, row_pointers);
+            std::cout << "RUnning";
             }
 
             // Synchronize to check for any kernel launch errors
