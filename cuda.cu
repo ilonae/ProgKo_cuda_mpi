@@ -28,6 +28,7 @@ __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, in
             output[gray_tid+1] = static_cast<unsigned char>(gray);
             output[gray_tid+2] = static_cast<unsigned char>(gray);
             output[gray_tid+3] = static_cast<unsigned char>(alpha);
+            printf("hello from gpu");
         }
     }
 
@@ -74,7 +75,6 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
         output[color_tid + 2] = static_cast<unsigned char>(gray);
         const unsigned char alpha = input[color_tid + 3];
         output[color_tid + 3] = static_cast<unsigned char>(alpha);
-        printf("hello from gpu");
     }
 }
     
