@@ -47,6 +47,16 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
     
 
 }
+
+
+__global__ void addVectors(const int *a, const int *b, int *c, const int &size)
+{
+    int i = blockIdx.x * blockDim.x * blockDim.y +
+            blockDim.x * threadIdx.y +
+            threadIdx.x;
+    c[i] = a[i] + b[i];
+    printf("hello from gpu");
+};
 /* 
 
 
@@ -185,7 +195,7 @@ void process_file(void)
         unsigned char* d_input, * d_output;
         int grayBytes = colorBytes;
         bool flag= true;
-
+        cudaError_t status;
         output_ptr = png_ptr;
     
         // Allocate device memory
@@ -202,18 +212,28 @@ void process_file(void)
 
          // Launch the color conversion kernel
         if(flag ==true){
-            grayscale_kernel << <grid, block >> > (d_output, width, height, row_pointers);
+            grayscale_kernel<<<grid, block>>>(d_output, width, height, row_pointers);
+            addVectors<<<grid, block>>>(dev_a, dev_b, dev_c, size);
             }
+        status = cudaGetLastError();
+        if (status != cudaSuccess)
+        {
+            std::cerr << "Error with the kernel!" << std::endl;
+            return status;
+        }
+
+        
 
             // Synchronize to check for any kernel launch errors
-        /* SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
+        SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
 
         // Copy back data from destination device meory to OpenCV output image
         SAFE_CALL(cudaMemcpy(output_ptr, d_output, grayBytes, cudaMemcpyDeviceToHost), "CUDA Memcpy Host To Device Failed");
 
         // Free the device memory
         SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
-        SAFE_CALL(cudaFree(d_output), "CUDA Free Failed"); */
+        SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
+        SAFE_CALL(cudaDeviceReset(), "Reset Failed");
     
 }
  
