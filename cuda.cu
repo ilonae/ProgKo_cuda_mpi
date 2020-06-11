@@ -74,12 +74,9 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
         output[color_tid + 2] = static_cast<unsigned char>(gray);
         const unsigned char alpha = input[color_tid + 3];
         output[color_tid + 3] = static_cast<unsigned char>(alpha);
+        printf("hello from gpu");
     }
 }
-    
-    
-    
-    
     
 int main(int argc, char **argv)
 {
