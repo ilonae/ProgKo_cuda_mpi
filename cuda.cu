@@ -35,12 +35,23 @@ png_bytep * row_pointers;
 
 
 
-__global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep &row_pointers) {
+__global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep* row_pointers) {
 
-        printf("hello from gpu");
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
+        {
+        
+        output[x] = 1;
+        output[y] = 1;
+        printf("hello from gpu");
+        }
+
+}
+/* 
+
+
+if ((x < width) && (y < height))
         {
                 png_byte* row = row_pointers[y];
                         png_byte* ptr = &(row[x*3]);
@@ -53,10 +64,10 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
         
         }
 
-}
 
 
-/* __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
+
+__global__ void emboss_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
 
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
