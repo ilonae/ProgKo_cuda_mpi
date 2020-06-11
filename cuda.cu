@@ -175,7 +175,7 @@ void process_file(void)
                 abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGB (%d) (is %d)",
                        PNG_COLOR_TYPE_RGB, png_get_color_type(png_ptr, info_ptr));
 
-        int colorBytes;
+        int colorBytes =  width * height * 3;
 
         for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
@@ -183,7 +183,6 @@ void process_file(void)
                         png_byte* ptr = &(row[x*3]);
                         printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
                                x, y, ptr[0], ptr[1], ptr[2]);
-                               colorBytes+=3;
 
                 }
         }
