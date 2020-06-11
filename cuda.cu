@@ -7,7 +7,6 @@
 
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
-    {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         printf("hello from gpu");
@@ -30,8 +29,6 @@ __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, in
             output[gray_tid+2] = static_cast<unsigned char>(gray);
             output[gray_tid+3] = static_cast<unsigned char>(alpha);
         }
-    }
-
 }
 
 
