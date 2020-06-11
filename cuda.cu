@@ -86,7 +86,7 @@ void readpng_version_info()
       ZLIB_VERSION, zlib_version);
 }
 
-void readpng_init(FILE *infile){
+int readpng_init(FILE *infile){
   unsigned char sig[8];
 
     fread(sig, 1, 8, infile);
@@ -108,6 +108,7 @@ if (setjmp(png_ptr->jmpbuf)) {
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         return 2;
     }
+    return 0;
 }
  
     
