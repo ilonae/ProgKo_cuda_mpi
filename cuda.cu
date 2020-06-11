@@ -192,8 +192,8 @@ if (setjmp(png_ptr->jmpbuf)) {
 int main(int argc, char **argv)
 {
 
-    for (int i = 0; i < argc; ++i) 
-    std::cout << argv[i] << "\n";
+    /* for (int i = 0; i < argc; ++i) 
+    std::cout << argv[i] << "\n"; */
 
     read_png_file(argv[1]);
     return 0;
