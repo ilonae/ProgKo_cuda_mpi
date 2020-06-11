@@ -1,7 +1,10 @@
 #include "Header.h"
 
 //https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
-
+using namespace std;
+FILE *in;
+static png_structp png_ptr;
+static png_infop info_ptr;
 
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
@@ -74,6 +77,39 @@ __global__ void emboss_kernel(unsigned char* input, unsigned char* output, int w
         output[color_tid + 3] = static_cast<unsigned char>(alpha);
     }
 }
+
+void readpng_version_info()
+{
+    fprintf(stderr, "   Compiled with libpng %s; using libpng %s.\n",
+      PNG_LIBPNG_VER_STRING, png_libpng_ver);
+    fprintf(stderr, "   Compiled with zlib %s; using zlib %s.\n",
+      ZLIB_VERSION, zlib_version);
+}
+
+int readpng_init(FILE *infile){
+  unsigned char sig[8];
+
+    fread(sig, 1, 8, infile);
+    if (!png_check_sig(sig, 8))
+        return 1;   /* bad signature */
+
+png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
+      NULL);
+    if (!png_ptr)
+        return 4;   /* out of memory */
+  
+    info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr) {
+        png_destroy_read_struct(&png_ptr, NULL, NULL);
+        return 4;   /* out of memory */
+    }
+
+if (setjmp(png_ptr->jmpbuf)) {
+        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        return 2;
+    }
+}
+ 
     
 int main(int argc, char **argv)
 {
@@ -82,8 +118,6 @@ int main(int argc, char **argv)
     std::cout << argv[i] << "\n";
     
     FILE* in=(FILE*)argv[1];
-    FILE* out=(FILE*)argv[2];
-    bool once=true;
 
     readpng_init(in);
     return 0;
@@ -100,32 +134,7 @@ int main(int argc, char **argv)
     
     grayscale_kernel<<<gridSize, blockSize>>>(inp, out,pw,ph,colorwidthstep, grayWidthStep); */
 }
-    
-int readpng_init(FILE *infile){
-    unsigned char sig[8];
-  
-      fread(sig, 1, 8, infile);
-      if (!png_check_sig(sig, 8))
-          return 1;   /* bad signature */
-  
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
-        NULL);
-      if (!png_ptr)
-          return 4;   /* out of memory */
-    
-      info_ptr = png_create_info_struct(png_ptr);
-      if (!info_ptr) {
-          png_destroy_read_struct(&png_ptr, NULL, NULL);
-          return 4;   /* out of memory */
-      }
-  
-  if (setjmp(png_ptr->jmpbuf)) {
-          png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-          return 2;
-      }
-  } 
-    
-    
+       
     
     ////row
      //const int x = blockIdx.x * blockDim.x + threadIdx.x;
