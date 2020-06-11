@@ -37,6 +37,7 @@ png_bytep * row_pointers;
 
 __global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep * row_pointers) {
     {
+        std::cout << "RUnning";
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
@@ -193,7 +194,6 @@ void process_file(void)
          // Launch the color conversion kernel
         if(flag ==true){
             grayscale_kernel << <grid, block >> > (d_output, width, height, row_pointers);
-            std::cout << "RUnning";
             }
 
             // Synchronize to check for any kernel launch errors
