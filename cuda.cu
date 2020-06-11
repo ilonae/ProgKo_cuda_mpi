@@ -36,8 +36,21 @@ void abort_(const char * s, ...)
 __global__ void grayscale_kernel(unsigned char* output, int width, int height, png_bytep* row_pointers) {
         const int x = blockIdx.x * blockDim.x + threadIdx.x;
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
+        /* for (unsigned int y = 0; y < height; y++) {
+            png_bytep row = row_pointers[y];
+            for (unsigned int x = 0; x < width; x++) {
+                png_bytep px = &(row[x * 4]);
+                /*printf("%4d, %4d = RGBA(%3d, %3d, %3d, %3d)\n", x, y, px[0], px[1], px[2], px[3]);
+                png_byte old[4 * sizeof(png_byte)];
+                memcpy(old, px, sizeof(old));
+                px[0] = 255 - old[0];
+                px[1] = 255 - old[1];
+                px[2] = 255 - old[2];
+            }
+        } */
         if ((x < width) && (y < height)){
-            png_byte* row = row_pointers[y];
+            png_bytep row = row_pointers[y];
+            png_bytep px = &(row[x * 3]);
             //png_byte* ptr = &(row[x*3]);
             //printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n", x, y, ptr[0], ptr[1], ptr[2]);
             output[x] = 1;
@@ -52,7 +65,6 @@ void write_png_file(char* file_name){
         FILE *fp = fopen(file_name, "wb");
         if (!fp)
                 abort_("[write_png_file] File %s could not be opened for writing", file_name);
-
 
         /* initialize stuff */
         png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
