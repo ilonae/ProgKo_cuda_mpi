@@ -188,10 +188,8 @@ void process_file(void)
                 }
         }
 
-        unsigned int* d_kernel;
-
         unsigned char* d_input, * d_output;
-        int grayBytes = colorBytes;
+        int* grayBytes = colorBytes;
     
         // Allocate device memory
         SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
