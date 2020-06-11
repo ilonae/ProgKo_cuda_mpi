@@ -41,15 +41,12 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
         const int y = blockIdx.y * blockDim.y + threadIdx.y;
         if ((x < width) && (y < height))
         {
-
-            for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
-                for (x=0; x<width; x++) {
                         png_byte* ptr = &(row[x*3]);
                         printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
                                x, y, ptr[0], ptr[1], ptr[2]);
 
-                               ptr[0],ptr[1],ptr[2] = (ptr[0] + ptr[1] + ptr[2])/3;
+                               //ptr[0],ptr[1],ptr[2] = (ptr[0] + ptr[1] + ptr[2])/3;
 
                 }
         }
