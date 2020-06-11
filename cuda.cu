@@ -178,9 +178,9 @@ void process_file(void)
         for (y=0; y<height; y++) {
                 png_byte* row = row_pointers[y];
                 for (x=0; x<width; x++) {
-                        png_byte* ptr = &(row[x*4]);
-                        printf("Pixel at position [ %d - %d ] has RGBA values: %d - %d - %d - %d\n",
-                               x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
+                        png_byte* ptr = &(row[x*3]);
+                        printf("Pixel at position [ %d - %d ] has RGB values: %d - %d - %d \n",
+                               x, y, ptr[0], ptr[1], ptr[2]);
 
                         /* set red value to 0 and green value to the blue one */
                         ptr[0] = 0;
