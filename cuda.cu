@@ -49,7 +49,6 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
             px[2] = 255 - old[2]; */
             output[x] = 1;
             output[y] = 1;
-            printf("hello from gpu");  
         }  
 }
 
