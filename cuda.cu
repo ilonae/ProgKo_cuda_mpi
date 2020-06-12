@@ -40,6 +40,7 @@ __global__ void grayscale_kernel(unsigned char* output, int width, int height, p
         if ((x < width) && (y < height)){
             png_bytep row = row_pointers[y];
             png_bytep px = &(row[x * 3]);
+            printf("Row values %d\n",row);
             printf("Pixel at position [ %d - %d ] has RGBA values\n",
                                x, y);
             /*png_byte old[3 * sizeof(png_byte)];
