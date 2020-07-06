@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 #endif // Benchmark
 
         if (rank == root) {
-            //Pfadangaben unterscheiden sich bei Linux und Windows Extra define für Linux erstellen falls es Probleme gibt. Dürfte aber nicht der Fall sein da OpenCv die Linux Syntax unterstützt
+            //Pfadangaben unterscheiden sich bei Linux und Windows Extra define fÃ¼r Linux erstellen falls es Probleme gibt. DÃ¼rfte aber nicht der Fall sein da OpenCv die Linux Syntax unterstÃ¼tzt
 #ifdef windows
             std::string path("C:/Bilder/dicelarge.png");
             cv::Mat image = cv::imread(path, cv::IMREAD_COLOR||cv::IMREAD_UNCHANGED);
@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
             oFile.open(filename, std::ofstream::app);
             
             cv::Mat greyMat;
-            cv::Mat gray = cv::Mat(image.cols,image.rows, rowstep, CV_8UC4);
+            cv::Mat graymat = cv::Mat(image.rows,image.cols, CV_8UC4);
             t10 = MPI_Wtime();
-            convert(image, gray, true);
+            convert(image, graymat, true);
             t11 = MPI_Wtime();
             t12 = MPI_Wtime();
             cv::cvtColor(image, greyMat, cv::COLOR_BGRA2GRAY);
@@ -75,19 +75,19 @@ int main(int argc, char** argv) {
 
 #endif
 
-            //Bildgröße aufrunden da die Teile alle gleich groß sein müssen. Spätere Substraktion notwendig. Teilung durch die Anzahl der Prozesse
+            //BildgrÃ¶ÃŸe aufrunden da die Teile alle gleich groÃŸ sein mÃ¼ssen. SpÃ¤tere Substraktion notwendig. Teilung durch die Anzahl der Prozesse
             //Values durch size
             int newcol = std::ceil(((double)image.cols / (size)));
             int newrow = std::ceil(((double)image.rows / (size)));
             fullnewcol = newcol * size;
             fullnewrow = newrow * size;
-            //Größenvektor für das Bild Initialisieren             
-            //INITIALISIERE NEUE Größen EINMAL GRAUWERT 1 BYTE und 3 BYTE 
+            //GrÃ¶ÃŸenvektor fÃ¼r das Bild Initialisieren             
+            //INITIALISIERE NEUE GrÃ¶ÃŸen EINMAL GRAUWERT 1 BYTE und 3 BYTE 
             blankslicegrey =    cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             blanksliceemboss =  cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             sendslice =         cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             //std::cout << "NEWROW: " << newrow << "NEWCOL" << newcol << "" << std::endl;
-            //Kopiere Bild auf neue Größe
+            //Kopiere Bild auf neue GrÃ¶ÃŸe
             //std::cout << "REIHEN IMAGE" << image.rows << " " << image.cols << "blankslice" << blanksliceemboss.rows << blanksliceemboss.cols << std::endl;
             cv::cvtColor(image, fourchannelimage, cv::COLOR_RGB2RGBA, 4);
             fourchannelimage.copyTo(sendslice(cv::Rect(0, 0, fourchannelimage.cols, fourchannelimage.rows)));            
@@ -240,7 +240,7 @@ int main(int argc, char** argv) {
 #endif // DEBUG    
 
     MPI_Finalize();
-    //TODO HIER BILD wieder in Ursprüngliche Größe umwandeln :)
+    //TODO HIER BILD wieder in UrsprÃ¼ngliche GrÃ¶ÃŸe umwandeln :)
 
     //TODO SPEICHER LEEREN KEIN GARBAGE COLLECTOR IN C++
     blanksliceemboss.release();
