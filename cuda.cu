@@ -1,5 +1,5 @@
 #include "Header.h"
-
+#define Benchmark
 //https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
 
 
@@ -140,12 +140,26 @@ void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
 
     unsigned char* d_input, * d_output;
 
+
+    std::ofstream oFile;
+    double t1, t2, t3, t4,t5,t6,t7,t8,t9;
+    std::string filename = "CUDAreservation.csv";//+ std::to_string(size) 
+    oFile.open(filename, std::ofstream::app);
+
+  
+
+    
+
+    
+    t1 = MPI_Wtime();
     // Allocate device memory
     SAFE_CALL(cudaMalloc<unsigned char>(&d_input, colorBytes), "CUDA Malloc Failed");
+    t2 = MPI_Wtime();
     SAFE_CALL(cudaMalloc<unsigned char>(&d_output, grayBytes), "CUDA Malloc Failed");    
     // Copy data from OpenCV input image to device memory
+    t3 = MPI_Wtime();
     SAFE_CALL(cudaMemcpy(d_input, input.ptr(), colorBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
-
+    t4 = MPI_Wtime();
     // Threads per Block
     const dim3 block(32, 32);
 
@@ -154,17 +168,31 @@ void convert(const cv::Mat& input, cv::Mat& output,bool flag) {
 
     // Launch the color conversion kernel
     if(flag ==true){
+        t5 = MPI_Wtime();
     grayscale_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
+        t6 = MPI_Wtime();
     }else {    
     emboss_kernel << <grid, block >> > (d_input, d_output, input.cols, input.rows, input.step, output.step);
     }
     // Synchronize to check for any kernel launch errors
     SAFE_CALL(cudaDeviceSynchronize(), "Kernel Launch Failed");
-
+    t7 = MPI_Wtime();
     // Copy back data from destination device meory to OpenCV output image
     SAFE_CALL(cudaMemcpy(output.ptr(), d_output, grayBytes, cudaMemcpyDeviceToHost), "CUDA Memcpy Host To Device Failed");
-
+    t8 = MPI_Wtime();
     // Free the device memory
     SAFE_CALL(cudaFree(d_input), "CUDA Free Failed");
     SAFE_CALL(cudaFree(d_output), "CUDA Free Failed");
+    t9 = MPI_Wtime();
+    oFile << "Alloc Color Storage" << "," << "Alloc gray Storage"<<","<<"Data2GDDR"<<","<<"Grayscale Kerneltime"<<","<<"Data2Img"<<","<<"All" << std::endl;
+    oFile << t2 - t1 << ","
+          << t3 - t2   << ","
+          << t4 - t3      << ","
+          << t6 - t5     << ","
+          << t8 - t7     << ","
+          << t9 - t1 
+        << std::endl;
+    oFile.close();
+
+
 }
