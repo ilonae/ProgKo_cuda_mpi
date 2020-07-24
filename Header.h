@@ -30,5 +30,5 @@ static inline void _safe_cuda_call(cudaError err, const char* msg, const char* f
 /// Safe call macro.
 #define SAFE_CALL(call,msg) _safe_cuda_call((call),(msg),__FILE__,__LINE__)
 
-void convert(const cv::Mat& input, cv::Mat& output, bool flag);
+void convert(const cv::Mat& input, cv::Mat& output, int flag);
 //extern void convert_to_gray(const cv::Mat& input, cv::Mat& output) {}

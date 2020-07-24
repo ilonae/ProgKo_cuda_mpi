@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 #endif // Benchmark
 
         if (rank == root) {
-            //Pfadangaben unterscheiden sich bei Linux und Windows Extra define fÃ¼r Linux erstellen falls es Probleme gibt. DÃ¼rfte aber nicht der Fall sein da OpenCv die Linux Syntax unterstÃ¼tzt
+            //Pfadangaben unterscheiden sich bei Linux und Windows Extra define für Linux erstellen falls es Probleme gibt. Dürfte aber nicht der Fall sein da OpenCv die Linux Syntax unterstützt
 
             std::cout << argv[1] << std::endl;
             std::string path(argv[1]);
@@ -83,20 +83,20 @@ int main(int argc, char** argv) {
 
 #endif
 
-            //BildgrÃ¶ÃŸe aufrunden da die Teile alle gleich groÃŸ sein mÃ¼ssen. SpÃ¤tere Substraktion notwendig. Teilung durch die Anzahl der Prozesse
+            //Bildgröße aufrunden da die Teile alle gleich groß sein müssen. Spätere Substraktion notwendig. Teilung durch die Anzahl der Prozesse
             //Values durch size
             int newcol = std::ceil(((double)image.cols / (size)));
             int newrow = std::ceil(((double)image.rows / (size)));
             fullnewcol = newcol * size;
             fullnewrow = newrow * size;
-            //GrÃ¶ÃŸenvektor fÃ¼r das Bild Initialisieren             
-            //INITIALISIERE NEUE GrÃ¶ÃŸen EINMAL GRAUWERT 1 BYTE und 3 BYTE 
+            //Größenvektor für das Bild Initialisieren             
+            //INITIALISIERE NEUE Größen EINMAL GRAUWERT 1 BYTE und 3 BYTE 
             blankslicegrey =    cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             blanksliceemboss =  cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             sendslice =         cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             blanksliceU1grey =  cv::Mat(fullnewrow, fullnewcol, CV_8UC1);
             //std::cout << "NEWROW: " << newrow << "NEWCOL" << newcol << "" << std::endl;
-            //Kopiere Bild auf neue GrÃ¶ÃŸe
+            //Kopiere Bild auf neue Größe
             //std::cout << "REIHEN IMAGE" << image.rows << " " << image.cols << "blankslice" << blanksliceemboss.rows << blanksliceemboss.cols << std::endl;
             cv::cvtColor(image, fourchannelimage, cv::COLOR_RGB2RGBA, 4);
             fourchannelimage.copyTo(sendslice(cv::Rect(0, 0, fourchannelimage.cols, fourchannelimage.rows)));            
