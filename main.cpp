@@ -1,7 +1,6 @@
 #include "Header.h"
-#define windows
-//Benchmark aktivieren deaktivieren
-#define Benchmark
+
+//#define Benchmark
 #define CUDAVSOPENCV
 
 
@@ -17,6 +16,7 @@ int main(int argc, char** argv) {
     cv::Mat blanksliceemboss;
     cv::Mat sendslice;
     cv::Mat blankslicegrey;
+    cv::Mat blanksliceU1grey;
     //Infos about processor name rank and count
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     int name_len;
@@ -45,11 +45,12 @@ int main(int argc, char** argv) {
 
         if (rank == root) {
             //Pfadangaben unterscheiden sich bei Linux und Windows Extra define für Linux erstellen falls es Probleme gibt. Dürfte aber nicht der Fall sein da OpenCv die Linux Syntax unterstützt
-#ifdef windows
-            std::string path("C:/Bilder/dicelarge.png");
+
+            std::cout << argv[1] << std::endl;
+            std::string path(argv[1]);
             cv::Mat image = cv::imread(path, cv::IMREAD_COLOR||cv::IMREAD_UNCHANGED);
             cv::Mat fourchannelimage;
-#endif
+
             //Wenn das Bild keine Daten hat beende das Programm
             if (!image.data) { return -1; }
 #ifdef CUDAVSOPENCV
@@ -58,20 +59,27 @@ int main(int argc, char** argv) {
             double t10, t11, t12, t13;
             std::string filename = "CUDAVSMPI.csv";//+ std::to_string(size) 
             oFile.open(filename, std::ofstream::app);
-            
+            cv::cvtColor(image, fourchannelimage, cv::COLOR_RGB2RGBA, 4);
             cv::Mat greyMat;
             cv::Mat graymat = cv::Mat(image.rows,image.cols, CV_8UC4);
             t10 = MPI_Wtime();
-            convert(image, graymat, true);
+            convert(fourchannelimage, graymat, true);
             t11 = MPI_Wtime();
             t12 = MPI_Wtime();
             cv::cvtColor(image, greyMat, cv::COLOR_BGRA2GRAY);
             t13 = MPI_Wtime();
             oFile << "Grayscale CUDA" << ","   << "Grayscale Opencv" << std::endl;
             oFile << t11 - t10 << ","
-                << t12 - t13 << ","
+                << t13 - t12 << ","
                 << std::endl;
             oFile.close();
+            //cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);// Create a window for display.
+            //std::vector<int> compression_params;
+            //compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+            //compression_params.push_back(9);
+            ////imwrite("gray.png", blankslicegrey, compression_params);
+            //imshow("Display window", graymat);                   // Show our image inside it.
+            //cv::waitKey(0);
 
 #endif
 
@@ -86,6 +94,7 @@ int main(int argc, char** argv) {
             blankslicegrey =    cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             blanksliceemboss =  cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
             sendslice =         cv::Mat(fullnewrow, fullnewcol, CV_8UC4);
+            blanksliceU1grey =  cv::Mat(fullnewrow, fullnewcol, CV_8UC1);
             //std::cout << "NEWROW: " << newrow << "NEWCOL" << newcol << "" << std::endl;
             //Kopiere Bild auf neue Größe
             //std::cout << "REIHEN IMAGE" << image.rows << " " << image.cols << "blankslice" << blanksliceemboss.rows << blanksliceemboss.cols << std::endl;
@@ -110,6 +119,8 @@ int main(int argc, char** argv) {
 
         //std::cout << "GEHT BIS HIER!";
         cv::Mat mat = cv::Mat(fullnewcol, rowstep, CV_8UC4);
+        cv::Mat matsingle = cv::Mat(fullnewcol, rowstep, CV_8UC1);
+
 #ifdef Benchmark
 
         t2 = MPI_Wtime();
@@ -138,7 +149,7 @@ int main(int argc, char** argv) {
 #endif
         //GRAYSCALE
         cv::Mat gray = cv::Mat(fullnewcol, rowstep, CV_8UC4);
-        convert(mat, gray, true);
+        convert(mat, gray, 0);
 
 
 #ifdef Benchmark
@@ -155,6 +166,17 @@ int main(int argc, char** argv) {
             root,
             MPI_COMM_WORLD);
 
+        cv::Mat graysingle = cv::Mat(fullnewcol, rowstep, CV_8UC1);
+        convert(mat, graysingle, 2);
+
+        MPI_Gather(graysingle.data,
+            fullnewrow * colstep * 1,
+            MPI_BYTE,
+            blanksliceU1grey.data,
+            rowstep * colstep * 1,
+            MPI_BYTE,
+            root,
+            MPI_COMM_WORLD);
 
 #ifdef Benchmark
         t5 = MPI_Wtime();
@@ -164,7 +186,7 @@ int main(int argc, char** argv) {
         //std::cout << "rennt" << std::endl;
         //TODO EMBOSS REMOVE NEXT LINE AFTER THIS
         cv::Mat emboss = cv::Mat(fullnewcol, rowstep, CV_8UC4);
-        convert(mat, emboss, false);
+        convert(mat, emboss, 1);
         //std::cout << emboss << std::endl;
 #ifdef Benchmark
         t6 = MPI_Wtime();
@@ -179,6 +201,9 @@ int main(int argc, char** argv) {
             MPI_BYTE,
             root,
             MPI_COMM_WORLD);
+
+        
+
         //std::cout << "rennt2" << std::endl;
 #ifdef Benchmark
         t7 = MPI_Wtime();
@@ -194,7 +219,7 @@ int main(int argc, char** argv) {
             compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
             compression_params.push_back(9);
             imwrite("gray.png", blankslicegrey, compression_params);
-            imshow("Display window", blanksliceemboss);                   // Show our image inside it.
+            imshow("Display window", blanksliceU1grey);                   // Show our image inside it.
             cv::waitKey(0);
         }
 #endif // !Benchmark
@@ -205,6 +230,7 @@ int main(int argc, char** argv) {
         mat.release();
         gray.release();
         emboss.release();
+        graysingle.release();
 #ifdef Benchmark
         //Write Nanosecs here :D
 
@@ -223,26 +249,13 @@ int main(int argc, char** argv) {
 
 
         }
-        else {
 
-            //outputFile << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() << ","
-            //    << std::chrono::duration_cast<std::chrono::nanoseconds>(t3 - t1).count() << ","
-            //    << std::chrono::duration_cast<std::chrono::nanoseconds>(t4 - t1).count() << ","
-            //    << std::chrono::duration_cast<std::chrono::nanoseconds>(t5 - t1).count() << ","
-            //    << std::chrono::duration_cast<std::chrono::nanoseconds>(t6 - t1).count() << ","
-            //    //<< std::chrono::duration_cast<std::chrono::nanoseconds>(t7 - t1).count() << ","
-            //    << std::endl;v 
-
-
-        }
-    //}
+    
     outputFile.close();
 #endif // DEBUG    
 
     MPI_Finalize();
-    //TODO HIER BILD wieder in Ursprüngliche Größe umwandeln :)
 
-    //TODO SPEICHER LEEREN KEIN GARBAGE COLLECTOR IN C++
     blanksliceemboss.release();
     blankslicegrey.release();
     sendslice.release();
