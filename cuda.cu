@@ -1,7 +1,5 @@
 #include "Header.h"
 #define Benchmark
-//https://github.com/evlasblom/cuda-opencv-examples/blob/master/src/bgrtogray.cu
-
 
 
 __global__ void grayscale_kernel(unsigned char* input, unsigned char* output, int width, int height, int colorWidthStep, int grayWidthStep) {
